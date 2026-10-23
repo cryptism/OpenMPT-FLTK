@@ -100,7 +100,16 @@ struct TimerData
 	double seconds = 0.0;
 };
 
-std::map<std::pair<const Wnd *, uintptr_t>, TimerData *> timers;
+using TimerMap = std::map<std::pair<const Wnd *, uintptr_t>, TimerData *>;
+
+// A function-local static, which Wnd::Wnd() touches, so it outlives every Wnd. As a namespace-scope
+// object it could be destroyed before a statically allocated window (PatternClipboardDialog::instance),
+// whose destructor then walked a dead map and never returned at exit.
+TimerMap &GetTimers()
+{
+	static TimerMap timers;
+	return timers;
+}
 
 // Keys that are currently held, to tell new presses from auto-repeat
 std::set<uint32> pressedKeys;
@@ -300,6 +309,7 @@ bool CommandTarget::OnCmdMsg(uint32 id, uint32 code, void *extra, LResult *resul
 
 Wnd::Wnd()
 {
+	GetTimers();
 	std::lock_guard<std::mutex> lock(GetLiveWindowsMutex());
 	GetLiveWindows().insert(this);
 }
@@ -307,6 +317,7 @@ Wnd::Wnd()
 
 Wnd::~Wnd()
 {
+	TimerMap &timers = GetTimers();
 	for(auto it = timers.begin(); it != timers.end();)
 	{
 		if(it->first.first == this)
@@ -835,7 +846,7 @@ uintptr_t Wnd::SetTimer(uintptr_t timerId, uint32 milliseconds)
 {
 	KillTimer(timerId);
 	TimerData *timer = new TimerData{this, timerId, milliseconds / 1000.0};
-	timers[{this, timerId}] = timer;
+	GetTimers()[{this, timerId}] = timer;
 	Fl::add_timeout(timer->seconds, TimerCallback, timer);
 	return timerId;
 }
@@ -843,6 +854,7 @@ uintptr_t Wnd::SetTimer(uintptr_t timerId, uint32 milliseconds)
 
 void Wnd::KillTimer(uintptr_t timerId)
 {
+	TimerMap &timers = GetTimers();
 	const auto it = timers.find({this, timerId});
 	if(it == timers.end())
 		return;
