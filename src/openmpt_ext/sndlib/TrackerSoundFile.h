@@ -80,8 +80,9 @@ public:
 	bool ReadFLACSample(SAMPLEINDEX sampleIndex, FileReader &file);
 	bool SaveFLACSample(SAMPLEINDEX sampleIndex, std::ostream &f) const;
 
-	// Also accepts DLS / SF2 banks, which libopenmpt only loads in the tracker build
+	// Also accepts DLS / SF2 banks and SFZ, which libopenmpt only loads in the tracker build
 	bool ReadInstrumentFromFile(INSTRUMENTINDEX instrumentIndex, FileReader &file, bool mayNormalize);
+	bool ReadSFZInstrument(INSTRUMENTINDEX instrumentIndex, FileReader &file);
 
 	bool IsOrderPositionLocked(ORDERINDEX orderIndex) const noexcept;
 	void PatternTranstionChnSolo(const CHANNELINDEX firstChannelIndex, const CHANNELINDEX lastChannelIndex);

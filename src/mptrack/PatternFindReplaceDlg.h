@@ -16,6 +16,8 @@
 #include "openmpt/all/BuildSettings.hpp"
 #include "ui/Ui.h"
 
+#include <climits>
+
 #include "EffectInfo.h"
 #include "PatternCursor.h"
 #include "PatternFindReplace.h"

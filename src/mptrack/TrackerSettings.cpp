@@ -12,6 +12,9 @@
 // FLTK port of openmpt/mptrack/TrackerSettings.cpp
 
 #include "stdafx.h"
+#if !defined(_WIN32)
+#include <unistd.h>
+#endif
 #include "ui/Ui.h"
 #include "TrackerSettings.h"
 #include "Mainfrm.h"
