@@ -11,6 +11,7 @@
 // FLTK port of openmpt/mptrack/PluginComboBox.cpp
 
 #include "stdafx.h"
+#include <climits>
 #include "ui/Ui.h"
 #include "PluginComboBox.h"
 #include "UpdateHints.h"
