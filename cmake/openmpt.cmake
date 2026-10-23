@@ -22,7 +22,19 @@ file(GLOB_RECURSE OPENMPT_GUI_SOURCES CONFIGURE_DEPENDS
 )
 list(FILTER OPENMPT_GUI_SOURCES EXCLUDE REGEX "/mptrack/manual_generator/")
 
-add_executable(OpenMPT ${OPENMPT_GUI_SOURCES} ${OPENMPT_UPSTREAM_SOURCES})
+# libopenmpt compiles upstream's SFZ reader out, so build it from upstream's source as a
+# CTrackerSoundFile member (see cmake/GenerateSFZImport.cmake)
+set(OPENMPT_SFZ_IMPORT ${CMAKE_BINARY_DIR}/generated/SampleFormatSFZImportExt.cpp)
+add_custom_command(
+	OUTPUT ${OPENMPT_SFZ_IMPORT}
+	COMMAND ${CMAKE_COMMAND} -DINPUT=${OPENMPT_UPSTREAM}/soundlib/SampleFormatSFZ.cpp -DOUTPUT=${OPENMPT_SFZ_IMPORT}
+		-P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateSFZImport.cmake
+	DEPENDS ${OPENMPT_UPSTREAM}/soundlib/SampleFormatSFZ.cpp ${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateSFZImport.cmake
+	COMMENT "Generating the SFZ instrument reader from upstream"
+	VERBATIM
+)
+
+add_executable(OpenMPT ${OPENMPT_GUI_SOURCES} ${OPENMPT_UPSTREAM_SOURCES} ${OPENMPT_SFZ_IMPORT})
 
 target_compile_definitions(OpenMPT PRIVATE
 	MPT_BUILD_ENABLE_PCH
