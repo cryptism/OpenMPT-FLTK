@@ -484,6 +484,13 @@ bool CTrackerSoundFile::ReadInstrumentFromFile(INSTRUMENTINDEX instrumentIndex, 
 		return false;
 
 	file.Rewind();
+	if(ReadSFZInstrument(instrumentIndex, file))
+	{
+		if(instrumentIndex > GetNumInstruments())
+			m_nInstruments = instrumentIndex;
+		return true;
+	}
+	file.Rewind();
 	CDLSBank bank;
 	if(!bank.Open(file) || !bank.ExtractInstrument(*this, instrumentIndex, 0, 0))
 		return false;
