@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Run this checkout's build (native Wayland). Usage: local/openmpt-fltk [song.it]
+here=$(cd "$(dirname "$(readlink -f "$0")")" && pwd)
+exec nix-shell "$here/shell.nix" --run "exec \"$here/../build/bin/OpenMPT\" $(printf '%q ' "$@")"
