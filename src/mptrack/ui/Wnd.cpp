@@ -42,7 +42,16 @@ std::vector<mpt::PathString> ParseDroppedFiles(const char *text, int length)
 		std::string_view line = data.substr(position, lineEnd - position);
 		position = lineEnd + 1;
 		if(!line.starts_with("file://"))
+		{
+			// Wayland, Windows and macOS hand over plain, already decoded paths. Requiring a file keeps
+			// ordinary pasted text from being taken for a drop.
+			if(line.empty())
+				continue;
+			const mpt::PathString file = mpt::PathString::FromUTF8(std::string(line));
+			if(FileSystem::IsFile(file))
+				files.push_back(file);
 			continue;
+		}
 		line.remove_prefix(7);
 		std::string path;
 		for(size_t i = 0; i < line.size(); ++i)
