@@ -4,5 +4,5 @@
 	branch = master
 [submodule "fltk"]
 	path = fltk
-	url = https://github.com/cryptism/fltk.git
-	branch = fix/wayland-take-focus-parent-cycle
+	url = https://github.com/fltk/fltk.git
+	branch = master
