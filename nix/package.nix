@@ -9,6 +9,8 @@
 , pkg-config
 , python3
 , wayland-scanner
+, wrapGAppsHook3
+, gtk3
 , zlib
 , alsa-lib
 , libpulseaudio
@@ -36,12 +38,15 @@ stdenv.mkDerivation {
   pname = "openmpt-fltk";
   inherit version src;
 
-  nativeBuildInputs = [ cmake ninja gnumake rsync pkg-config python3 wayland-scanner ];
+  nativeBuildInputs = [ cmake ninja gnumake rsync pkg-config python3 wayland-scanner wrapGAppsHook3 ];
 
   buildInputs = [
     zlib alsa-lib libpulseaudio
     libx11 libxext libxft libxinerama libxcursor libxrender libxfixes
     wayland wayland-protocols libxkbcommon libdecor
+    # FLTK's native file chooser loads GTK 3 at run time; it aborts without its GSettings schemas,
+    # which wrapGAppsHook3 puts on XDG_DATA_DIRS
+    gtk3
     pango cairo dbus libpng libjpeg libGL libGLU
   ];
 
