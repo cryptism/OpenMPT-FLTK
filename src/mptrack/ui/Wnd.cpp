@@ -554,7 +554,10 @@ void Wnd::SetFont(const Font &font)
 void Wnd::SetCapture()
 {
 	capturedWindow = this;
-	Fl::grab(GetWidget()->window());
+	// A grab sends the release to the window, which gives it to the widget under the mouse. The pushed
+	// widget gets drags and the release wherever the mouse is, which a drag from one pane to another needs.
+	if(Fl::pushed() != GetWidget())
+		Fl::grab(GetWidget()->window());
 }
 
 
